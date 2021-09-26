@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Watten Onlin</title>
+
+    <link rel="stylesheet" href="/main.css">
+    <script src="main.js"></script>
+    <script src="connection.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+
+
+</head>
+
+<body>
+    <div id="waiting" style="display:none">
+        <h1 class="middle">Bitte Warten</h1>
+        <h2 id="waitingPlayer">Vorhandene Spieler: Lädt...</h2>
+    </div>
+    <table id="position">
+        <tr style="vertical-align: top;">
+            <td align="left">
+                <button id="OL" onclick="init('OL')">Oben Links</button>
+            </td>
+            <td align="right">
+                <button id="OR" onclick="init('OR')">Oben Rechts</button>
+            </td>
+        </tr>
+        <tr style="vertical-align: bottom;">
+            <td align="left">
+                <button id="UL" onclick="init('UL')">Unten Links</button>
+            </td>
+            <td align="right">
+                <button id="UR" onclick="init('UR')">Unten Rechts</button>
+            </td>
+        </tr>
+    </table>
+    <div id="game" style="display: block;">
+        <!--gelegte Carten-->
+        <div>
+            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
+            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
+            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
+            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
+            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
+        </div><br><br><br>
+
+        <!--cards-->
+        <div class="flex-container" id="yourCards">
+        </div>
+    </div>
+</body>
+
+</html>
