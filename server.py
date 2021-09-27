@@ -24,6 +24,11 @@ class Card:
             for x in range(2    ):
                 self.players[i]+=[Deck[-1]]
                 Deck.pop(-1)
+        i=0
+        for _ in self.players:
+            self.players[i]=sorted(self.players[i])
+            i+=1
+
         print(self.players)
 
 def getPlayerId(name):

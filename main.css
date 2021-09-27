@@ -37,3 +37,7 @@ html {
     flex-direction: row;
     flex-wrap: wrap;
 }
+
+button {
+    font-size: 300%;
+}

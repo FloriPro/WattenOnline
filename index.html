@@ -17,7 +17,10 @@
         <h1 class="middle">Bitte Warten</h1>
         <h2 id="waitingPlayer">Vorhandene Spieler: Lädt...</h2>
     </div>
-    <table id="position">
+
+    <h1 id="startingConnection" style="display:block">Verbindung wird aufgebaut</h1>
+
+    <table id="position" style="display:none">
         <tr style="vertical-align: top;">
             <td align="left">
                 <button id="OL" onclick="init('OL')">Oben Links</button>
@@ -37,7 +40,7 @@
     </table>
     <div id="game" style="display: block;">
         <!--gelegte Carten-->
-        <div>
+        <div style="display: none;">
             <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
             <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
             <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
@@ -49,6 +52,7 @@
         <div class="flex-container" id="yourCards">
         </div>
     </div>
+    <button id="NeueIP" onclick="neueIp()">Neue IP</button>
 </body>
 
 </html>
