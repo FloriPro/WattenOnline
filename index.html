@@ -13,44 +13,61 @@
 </head>
 
 <body>
+    <div id="Hauptschlagt"></div>
     <div id="waiting" style="display:none">
-        <h1 class="middle">Bitte Warten</h1>
+        <h1 class="middle" style="margin-top: 0%;">Bitte Warten</h1>
         <h2 id="waitingPlayer">Vorhandene Spieler: Lädt...</h2>
     </div>
 
-    <h1 id="startingConnection" style="display:block">Verbindung wird aufgebaut</h1>
 
+    <h1 id="startingConnection" style="display:block">Verbindung wird aufgebaut</h1>
     <table id="position" style="display:none">
         <tr style="vertical-align: top;">
             <td align="left">
-                <button id="OL" onclick="init('OL')">Oben Links</button>
+                <button style="display: none;" id="OL" onclick="init('OL')">Oben Links</button>
             </td>
             <td align="right">
-                <button id="OR" onclick="init('OR')">Oben Rechts</button>
+                <button style="display: none;" id="OR" onclick="init('OR')">Oben Rechts</button>
             </td>
         </tr>
         <tr style="vertical-align: bottom;">
             <td align="left">
-                <button id="UL" onclick="init('UL')">Unten Links</button>
+                <button style="display: none;" id="UL" onclick="init('UL')">Unten Links</button>
             </td>
             <td align="right">
-                <button id="UR" onclick="init('UR')">Unten Rechts</button>
+                <button style="display: none;" id="UR" onclick="init('UR')">Unten Rechts</button>
             </td>
         </tr>
     </table>
     <div id="game" style="display: block;">
+        <h2 id="info" style="display: none;font-size: 500%;">ERROR</h2>
         <!--gelegte Carten-->
-        <div style="display: none;">
-            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
-            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
-            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
-            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
-            <img src="/deck/own/S_7.png" width="30%" height="30%" style="margin-right: -20%;">
-        </div><br><br><br>
+        <div style="display: block;" id="layedCards">
+        </div>
+        <br>
+        <h2 style="margin-top: 0px;margin-bottom: 0px;display: none;" id="Msg">ERROR</h2>
 
         <!--cards-->
         <div class="flex-container" id="yourCards">
         </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <table style="font-size: 300%;width: 100%;display: none;" id="SticheAnzahl">
+            <tr>
+                <td><p id="SticheOL">0 Stich(e)</p></td>
+                <td><p id="SticheOR">0 Stich(e)</p></td>
+            </tr>
+            <tr>
+                <td><p id="SticheUL">0 Stich(e)</p></td>
+                <td><p id="SticheUR">0 Stich(e)</p></td>
+            </tr>
+        </table>
     </div>
     <button id="NeueIP" onclick="neueIp()">Neue IP</button>
 </body>
