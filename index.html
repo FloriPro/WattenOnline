@@ -8,6 +8,7 @@
     <script src="main.js"></script>
     <script src="connection.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <meta charset="UTF-8">
 
 
 </head>
@@ -24,18 +25,18 @@
     <table id="position" style="display:none">
         <tr style="vertical-align: top;">
             <td align="left">
-                <button style="display: none;" id="OL" onclick="init('OL')">Oben Links</button>
+                <button style="display: none;" id="OL" class="posSel" onclick="init('OL')">Oben Links</button>
             </td>
             <td align="right">
-                <button style="display: none;" id="OR" onclick="init('OR')">Oben Rechts</button>
+                <button style="display: none;" id="OR" class="posSel" onclick="init('OR')">Oben Rechts</button>
             </td>
         </tr>
         <tr style="vertical-align: bottom;">
             <td align="left">
-                <button style="display: none;" id="UL" onclick="init('UL')">Unten Links</button>
+                <button style="display: none;" id="UL" class="posSel" onclick="init('UL')">Unten Links</button>
             </td>
             <td align="right">
-                <button style="display: none;" id="UR" onclick="init('UR')">Unten Rechts</button>
+                <button style="display: none;" id="UR" class="posSel" onclick="init('UR')">Unten Rechts</button>
             </td>
         </tr>
     </table>
@@ -45,7 +46,7 @@
         <div style="display: block;" id="layedCards">
         </div>
         <br>
-        <h2 style="margin-top: 0px;margin-bottom: 0px;display: none;" id="Msg">ERROR</h2>
+        <h2 style="margin-top: 0px;margin-bottom: 0px;display: none;background: rgb(0, 128, 255);" id="Msg">ERROR</h2>
 
         <!--cards-->
         <div class="flex-container" id="yourCards">
