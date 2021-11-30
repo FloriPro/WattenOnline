@@ -3,7 +3,8 @@ from asyncio.tasks import sleep
 import random
 from typing_extensions import ParamSpec
 import websockets
-
+import threading
+import os
 
 class CardDeck:
     def __init__(self) -> None:
@@ -15,8 +16,8 @@ class CardDeck:
         for F in Farben:
             for Z in Zahlen:
                 self.Deck += [f"{F}_{Z}"]
-        DeckSave = self.Deck[:]
-        random.shuffle(self.Deck)
+        DeckSave = self.Deck
+        self.Deck=random.sample(self.Deck,len(self.Deck))
 
         # austeilen
         self.players = {0: [], 1: [], 2: [], 3: []}
@@ -36,7 +37,7 @@ class CardDeck:
         print(self.players)
         for x in self.Deck:
             DeckSave.remove(x)
-        self.Deck = DeckSave
+        self.Deck = DeckSave[:]
         print(self.Deck)
 
 
@@ -97,6 +98,7 @@ Stiche = [0, 0, 0, 0]
 waiting = -1
 playerRound = 0
 stapel = {}
+best=-1
 
 Playing = True
 
@@ -129,6 +131,8 @@ async def server(websocket, path):
     global running
     global Playing
     global Card
+    global Stiche
+    global best
 
     NewPlay = False
     try:
@@ -160,6 +164,18 @@ async def server(websocket, path):
                                 ok += [line[i]]
                             i += 1
                         await websocket.send(f"FR_{'#'.join(ok)}")
+
+            if pos==0:
+                parterPlayer=2
+            if pos==1:
+                parterPlayer=3
+            if pos==2:
+                parterPlayer=0
+            if pos==3:
+                parterPlayer=1
+            
+            
+            print(f"partner von {pos} ist {parterPlayer}")
 
             print(Card.players[pos])
 
@@ -211,6 +227,11 @@ async def server(websocket, path):
                     while w2:
                         await websocket.send("waitFar")
                         await asyncio.sleep(0.5)
+            else:
+                i = []
+                for x in Stiche:
+                    i += [str(x)]
+                await websocket.send(f"Stiche{'#'.join(i)}")
             await websocket.send(f"slaSelected_{Sla}")
             await websocket.send(f"farSelected_{Far}")
             ##################################
@@ -240,8 +261,17 @@ async def server(websocket, path):
                         for x in Stiche:
                             i += [str(x)]
                         activePlayer = best[1]
+                        await asyncio.sleep(2.9)
+                        #send message
+                        if best[1]==pos:
+                            await websocket.send(f"GotStiDu")
+                        elif best[1]==parterPlayer:
+                            await websocket.send(f"GotStiPartner")
+                        else:
+                            await websocket.send(f"GotStiGegner")
+                        await asyncio.sleep(1.9)
+                        best=-1
                         await websocket.send(f"Stiche{'#'.join(i)}")
-                        await asyncio.sleep(4.9)
                         stapel = {}
                         await websocket.send(f"Stapel{'#'.join(stapel)}")
                         if Stiche[0]+Stiche[2] >= 3:
@@ -256,7 +286,16 @@ async def server(websocket, path):
                     await websocket.send(f"Stapel{'#'.join(stapel)}")
 
                     if len(stapel) >= 4:
-                        await asyncio.sleep(5)
+                        await asyncio.sleep(3)
+                        #send message
+                        if best[1]==pos:
+                            await websocket.send(f"GotStiDu")
+                        elif best[1]==parterPlayer:
+                            await websocket.send(f"GotStiPartner")
+                        else:
+                            await websocket.send(f"GotStiGegner")
+
+                        await asyncio.sleep(2)
                         i = []
                         for x in Stiche:
                             i += [str(x)]
@@ -284,15 +323,18 @@ async def server(websocket, path):
                 if Playing == False:
                     await websocket.send("off")
             await websocket.send("reset")
+            for x in Stiche:
+                i += [str(x)]
+            await websocket.send(f"Stiche{'#'.join(i)}")
             NewPlay = True
             running = False
     except websockets.ConnectionClosed as e:
-        players -= 1
         if pos != -1:
+            players -= 1
             usedPos[pos] = False
-            print(f"{pos} disconnected!")
+            print(f"{pos} disconnected! {players} remaining.")
         else:
-            print(f"Player disconnected!")
+            print(f"Player disconnected! {players} remaining.")
         if players < 0:
             print("ERROR: Player below 0")
             players = 0
@@ -300,6 +342,10 @@ async def server(websocket, path):
 
 
 start_server = websockets.serve(server, '', 8000)
+
+def FileServer():
+    os.system("python -m http.server 80")
+threading.Thread(target=FileServer,daemon=True).start()
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

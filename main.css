@@ -7,9 +7,14 @@ html {
     color: white;
 }
 
+#HauptSchlagImg{
+    position:fixed;
+    margin-left: 80%;
+    
+}
+
 #position {
     width: 100%;
-    height: 100%;
 }
 
 .mobileShow {
@@ -40,4 +45,36 @@ html {
 
 button {
     font-size: 600%;
+}
+
+/* The alert message box */
+
+.alert {
+    padding: 20px;
+    background-color: #36f43f;
+    /* Red */
+    color: rgb(0, 0, 0);
+    margin-bottom: 15px;
+    margin-top: 0;
+    font-size: 45px;
+}
+
+
+/* The close button */
+
+.closebtn {
+    margin-left: 15px;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    float: right;
+    font-size: 45px;
+    cursor: pointer;
+}
+
+
+/* When moving the mouse over the close button */
+
+.closebtn:hover {
+    color: rgb(255, 255, 255);
+    transition: 1s;
 }

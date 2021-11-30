@@ -34,21 +34,31 @@ var HauptFar;
 var HauptSla;
 var posYou = "None";
 
+var wsOpen = false
+
 function wsSend(message) {
-  ws.send(message)
+  if (wsOpen) {
+    ws.send(message);
+  }
 }
 
-window.addEventListener('load', function () {
+function load() {
+
   ws = new WebSocket("ws://" + getCookie("serverIpAdress") + ":8000/");
 
 
   var cards = [];
+  ws.onclose = function (event) {
+    wsOpen = false;
+    load();
+  }
 
   ws.onopen = function (event) {
     console.log("ok");
     document.getElementById("position").style.display = "inline-table";
     document.getElementById("startingConnection").style.display = "none";
     document.getElementById("NeueIP").style.display = "none";
+    wsOpen = true;
   }
 
   ws.onerror = function (event) {
@@ -62,11 +72,13 @@ window.addEventListener('load', function () {
   ws.onmessage = function (event) {
     console.log(event.data);
     if (event.data.substring(0, 2) == "PL") {
+      document.title = "Watten Online | Warten auf genug Spieler";
       p = event.data.substring(2, 0);
 
       document.getElementById("waitingPlayer").innerHTML = "Vorhandene Spieler: " + event.data.substring(2, 3)
     }
     if (event.data.substring(0, 7) == "YourSel") {
+      document.title = "Watten Online | Karte legen";
       type = "YourSel"
       document.getElementById("Msg").textContent = "Lege eine Karte:";
       document.getElementById("Msg").style.display = "unset";
@@ -83,6 +95,8 @@ window.addEventListener('load', function () {
       document.getElementById("SticheAnzahl").style.display = "unset";
     }
     if (event.data.substring(0, 2) == "FR") {
+      document.title = "Watten Online | Position auswählen";
+
       document.querySelectorAll(".posSel").forEach(element => {
         element.style.display = "none";
       });
@@ -93,6 +107,7 @@ window.addEventListener('load', function () {
       }
     }
     if (event.data.substring(0, 6) == "WaiOnP") {
+      document.title = "Watten Online | auf Spieler warten"
     }
     if (event.data.substring(0, 5) == "clear") {
       document.getElementById("waiting").style.display = "none";
@@ -101,8 +116,10 @@ window.addEventListener('load', function () {
     if (event.data.substring(0, 7) == "waitSla") {
       document.getElementById("info").style.display = "unset";
       document.getElementById("info").textContent = "Warte auf selection vom Schlag";
+      document.title = "Watten Online | Warte auf Schlag";
     }
     if (event.data.substring(0, 7) == "SelSla") {
+      document.title = "Watten Online | Schlag auswählen";
       type = "selSla"
       document.getElementById("info").style.display = "unset";
       document.getElementById("info").style.background = "#0dff00"
@@ -111,8 +128,10 @@ window.addEventListener('load', function () {
     if (event.data.substring(0, 7) == "waitFar") {
       document.getElementById("info").style.display = "unset";
       document.getElementById("info").textContent = "Warte auf selection von Farbe -- Schlag: " + HauptSla;
+      document.title = "Watten Online | Warte auf Farbe";
     }
     if (event.data.substring(0, 7) == "SelFar") {
+      document.title = "Watten Online | Farbe auswählen";
       type = "selFar"
       document.getElementById("info").style.display = "unset";
       document.getElementById("info").style.background = "#0dff00"
@@ -130,7 +149,7 @@ window.addEventListener('load', function () {
     if (event.data.substring(0, 12) == "farSelected_") {
       console.log("selected Farbe: " + event.data.substring(12, 13));
       HauptFar = event.data.substring(12, 13);
-      document.getElementById("Hauptschlagt").innerHTML += '<img width="20%" height="20%" alt="' + HauptFar + "_" + HauptSla + '" src="/deck/own/' + HauptFar + "_" + HauptSla + '.png" style="position:fixed;margin-left: 80%;">';
+      document.getElementById("Hauptschlagt").innerHTML += '<img id="HauptSchlagImg" width="20%" alt="' + HauptFar + "_" + HauptSla + '" src="/deck/own/' + HauptFar + "_" + HauptSla + '.png">';
       document.getElementById("info").style.display = "none";
     }
     if (event.data.substring(0, 12) == "slaSelected_") {
@@ -143,7 +162,23 @@ window.addEventListener('load', function () {
       document.getElementById("SticheUR").textContent = event.data.substring(6, 999).split("#")[2] + " Stich(e)"
       document.getElementById("SticheUL").textContent = event.data.substring(6, 999).split("#")[3] + " Stich(e)"
     }
+    if (event.data.substring(0, 6) == "GotSti") {
+      var g = event.data.substring(6, 999);
+      if (g == "Partner") {
+        document.title = "Watten Online | Dein Partner hat gestochen";
+        addMessage("Dein Partner hat gestochen!")
+      }
+      if (g == "Du") {
+        document.title = "Watten Online | Du hast gestochen";
+        addMessage("Du hast gestochen!")
+      }
+      if (g == "Gegner") {
+        document.title = "Watten Online | Deine Gegner haben diesen Stich bekommen";
+        addMessage("Deine Gegner haben diesen Stich bekommen.")
+      }
+    }
     if (event.data == "NewGame") {
+      document.title = "Watten Online | Neues Spiel?";
       if (window.confirm("Nocheinmal?")) {
         wsSend("Yes")
       } else {
@@ -155,8 +190,10 @@ window.addEventListener('load', function () {
       window.alert("Watten Spiel Beendet!");
     }
     if (event.data == "reset") {
+      document.title = "Watten Online | Neues Spiel";
       console.warn("RESET")
       type = "none";
+      document.querySelector("#HauptSchlagImg").remove()
       HauptFar = undefined;
       HauptSla = undefined;
       type = "none"
@@ -164,9 +201,12 @@ window.addEventListener('load', function () {
 
   };
 
-});
+}
+
+window.addEventListener('load', load);
 
 function init(pos) {
+  document.title = "Watten Online"
   clearInterval(startUpdateLoop);
   posYou = pos;
   document.getElementById("Stiche" + pos).style.backgroundColor = "crimson";
@@ -183,6 +223,7 @@ startUpdateLoop = setInterval(function () {
 
 
 function cardSelect(cardId) {
+  document.title = "Watten Online"
   document.getElementById("info").style.background = "unset"
   console.log(cardId);
   if (type == "selSla") {
