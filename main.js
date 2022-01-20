@@ -13,6 +13,7 @@ window.addEventListener('resize', function () {
 })
 
 
+
 //Fade out Messages
 function moveAwayEffect(moveAwayTarget) {
   var moveAwayTargetStyleMarginTopI = 0

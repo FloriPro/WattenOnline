@@ -20,6 +20,10 @@
         <h2 id="waitingPlayer">Vorhandene Spieler: Lädt...</h2>
     </div>
 
+    <div style="position: fixed;bottom: 0;right: 0;">
+        <p style="font-size: 50px;color: rgba(255, 0, 0, 0);" id="ConnectionInfo">Verbinde...</p>
+    </div>
+
     <div id="alerts" style="right: 0;position: fixed;max-width: 350px;min-width: 250px;"></div>
 
     <h1 id="startingConnection" style="display:block">Verbindung wird aufgebaut</h1>
@@ -47,7 +51,9 @@
         <div style="display: block;" id="layedCards">
         </div>
         <br>
-        <h2 style="margin-top: 0px;margin-bottom: 0px;display: none;background: rgb(0, 128, 255);" id="Msg">ERROR</h2>
+        <h2 style="margin-top: 0px;margin-bottom: 0px;display: none;background: rgb(0, 128, 255);font-size: 250%;"
+            id="Msg">ERROR
+        </h2>
 
         <!--cards-->
         <div class="flex-container" id="yourCards">
@@ -60,23 +66,42 @@
         <br>
         <br>
         <br>
-        <table style="font-size: 300%;width: 100%;display: none;" id="SticheAnzahl">
-            <tr>
-                <td>
-                    <p id="SticheOL">0 Stich(e)</p>
-                </td>
-                <td>
-                    <p id="SticheOR">0 Stich(e)</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p id="SticheUL">0 Stich(e)</p>
-                </td>
-                <td>
-                    <p id="SticheUR">0 Stich(e)</p>
-                </td>
-            </tr>
+        <table>
+            <td>
+                <table style="font-size: 300%;width: 100%;display: none;" id="SticheAnzahl">
+                    <tr>
+                        <td>
+                            <p id="SticheOL">0 Stich(e)</p>
+                        </td>
+                        <td>
+                            <p id="SticheOR">0 Stich(e)</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p id="SticheUL">0 Stich(e)</p>
+                        </td>
+                        <td>
+                            <p id="SticheUR">0 Stich(e)</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <td>
+                        <tr>
+                            <button style="font-size: 300%;">Wir Gehen</button>
+                        </tr>
+                        <tr>
+                            <button style="font-size: 300%;">Gehts ihr?</button>
+                        </tr>
+                    </td>
+                    <td>
+                        <p style="font-size: 250%;">Punkte für diese Runde: Unknown</p>
+                    </td>
+                </table>
+            </td>
         </table>
     </div>
     <button id="NeueIP" onclick="neueIp()">Neue IP</button>

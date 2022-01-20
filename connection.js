@@ -44,12 +44,14 @@ function wsSend(message) {
 
 function load() {
 
+  document.getElementById("ConnectionInfo").style.color = "rgba(255, 0, 0, 1)"
   ws = new WebSocket("ws://" + getCookie("serverIpAdress") + ":8000/");
 
 
   var cards = [];
   ws.onclose = function (event) {
     wsOpen = false;
+    document.getElementById("ConnectionInfo").innerText = "Verbindung geschlossen! Neu versuch initialisirt";
     load();
   }
 
@@ -59,6 +61,7 @@ function load() {
     document.getElementById("startingConnection").style.display = "none";
     document.getElementById("NeueIP").style.display = "none";
     wsOpen = true;
+    document.getElementById("ConnectionInfo").style.color = "rgba(255, 0, 0, 0)"
   }
 
   ws.onerror = function (event) {
@@ -115,7 +118,7 @@ function load() {
     }
     if (event.data.substring(0, 7) == "waitSla") {
       document.getElementById("info").style.display = "unset";
-      document.getElementById("info").textContent = "Warte auf selection vom Schlag";
+      document.getElementById("info").textContent = "Warte auf die Auswahl vom Schlag";
       document.title = "Watten Online | Warte auf Schlag";
     }
     if (event.data.substring(0, 7) == "SelSla") {
@@ -127,7 +130,7 @@ function load() {
     }
     if (event.data.substring(0, 7) == "waitFar") {
       document.getElementById("info").style.display = "unset";
-      document.getElementById("info").textContent = "Warte auf selection von Farbe -- Schlag: " + HauptSla;
+      document.getElementById("info").textContent = "Warte auf die Auswahl von Farbe | Schlag: " + HauptSla;
       document.title = "Watten Online | Warte auf Farbe";
     }
     if (event.data.substring(0, 7) == "SelFar") {

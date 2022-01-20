@@ -4,7 +4,8 @@ import random
 from typing_extensions import ParamSpec
 import websockets
 import threading
-import os
+import subprocess
+
 
 class CardDeck:
     def __init__(self) -> None:
@@ -17,7 +18,7 @@ class CardDeck:
             for Z in Zahlen:
                 self.Deck += [f"{F}_{Z}"]
         DeckSave = self.Deck
-        self.Deck=random.sample(self.Deck,len(self.Deck))
+        self.Deck = random.sample(self.Deck, len(self.Deck))
 
         # austeilen
         self.players = {0: [], 1: [], 2: [], 3: []}
@@ -51,7 +52,7 @@ def getPlayerId(name):
 
 def getPoints(HsFar, HsSla):
     F = ["E", "G", "H", "S"]
-    Z = ["A", "10", "K", "O", "U", "9", "8", "7"]
+    Z = ["A", "K", "O", "U", "10", "9", "8", "7"]
 
     goodBad = ["H_K", "S_7", "E_7", f"{HsFar}_{HsSla}"]
     for x in F:
@@ -98,7 +99,7 @@ Stiche = [0, 0, 0, 0]
 waiting = -1
 playerRound = 0
 stapel = {}
-best=-1
+best = -1
 
 Playing = True
 
@@ -165,17 +166,14 @@ async def server(websocket, path):
                             i += 1
                         await websocket.send(f"FR_{'#'.join(ok)}")
 
-            if pos==0:
-                parterPlayer=2
-            if pos==1:
-                parterPlayer=3
-            if pos==2:
-                parterPlayer=0
-            if pos==3:
-                parterPlayer=1
-            
-            
-            print(f"partner von {pos} ist {parterPlayer}")
+            if pos == 0:
+                parterPlayer = 2
+            if pos == 1:
+                parterPlayer = 3
+            if pos == 2:
+                parterPlayer = 0
+            if pos == 3:
+                parterPlayer = 1
 
             print(Card.players[pos])
 
@@ -262,15 +260,15 @@ async def server(websocket, path):
                             i += [str(x)]
                         activePlayer = best[1]
                         await asyncio.sleep(2.9)
-                        #send message
-                        if best[1]==pos:
+                        # send message
+                        if best[1] == pos:
                             await websocket.send(f"GotStiDu")
-                        elif best[1]==parterPlayer:
+                        elif best[1] == parterPlayer:
                             await websocket.send(f"GotStiPartner")
                         else:
                             await websocket.send(f"GotStiGegner")
                         await asyncio.sleep(1.9)
-                        best=-1
+                        best = -1
                         await websocket.send(f"Stiche{'#'.join(i)}")
                         stapel = {}
                         await websocket.send(f"Stapel{'#'.join(stapel)}")
@@ -287,10 +285,10 @@ async def server(websocket, path):
 
                     if len(stapel) >= 4:
                         await asyncio.sleep(3)
-                        #send message
-                        if best[1]==pos:
+                        # send message
+                        if best[1] == pos:
                             await websocket.send(f"GotStiDu")
-                        elif best[1]==parterPlayer:
+                        elif best[1] == parterPlayer:
                             await websocket.send(f"GotStiPartner")
                         else:
                             await websocket.send(f"GotStiGegner")
@@ -343,9 +341,12 @@ async def server(websocket, path):
 
 start_server = websockets.serve(server, '', 8000)
 
+
 def FileServer():
-    os.system("python -m http.server 80")
-threading.Thread(target=FileServer,daemon=True).start()
+    subprocess.run("python -m http.server 80", capture_output=True)
+
+
+threading.Thread(target=FileServer, daemon=True).start()
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
