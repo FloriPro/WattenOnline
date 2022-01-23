@@ -34,5 +34,7 @@ function moveAwayEffect(moveAwayTarget) {
 }
 
 function addMessage(text) {
-  document.getElementById("alerts").innerHTML += '<div class="alert" style="margin-top: 0;"><span class="closebtn" onclick="moveAwayEffect(this.parentElement)">X </span>' + text + '<br></div>'
+  r=Math.random()
+  document.getElementById("alerts").innerHTML += '<div class="alert" style="margin-top: 0;" id="alert_id'+r+'"><span class="closebtn" onclick="moveAwayEffect(this.parentElement)">X </span>' + text + '<br></div>'
+  setTimeout(moveAwayEffect,5000,document.getElementById('alert_id'+r))
 }

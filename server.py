@@ -109,9 +109,13 @@ w1 = True
 w2 = True
 running = False
 
+gehen=-1
+gehenAnswerC=0
+gehenAnswer=False
+
 
 def a1(var):
-    if var != 3:
+    if var < 3:
         return var+1
     else:
         return 0
@@ -134,6 +138,10 @@ async def server(websocket, path):
     global Card
     global Stiche
     global best
+    global gehen
+    global gehenAnswerC
+    global gehenAnswer
+
 
     NewPlay = False
     try:
@@ -243,7 +251,59 @@ async def server(websocket, path):
                 if activePlayer == pos:
                     waiting = pos
                     await websocket.send("YourSel")
-                    data = await websocket.recv()
+                    while True:
+                        try:
+                            data = await asyncio.wait_for(websocket.recv(),1)
+                        except asyncio.TimeoutError:
+                            pass
+                        else:
+                            if data=="AskIfwanaGo":
+                                gehenAnswer=True
+                                gehen=pos
+                                while gehenAnswerC<2:
+                                    await websocket.send(f"waitingGehenAnswer_{gehenAnswerC}")
+                                    await asyncio.sleep(0.5)
+                                if gehenAnswer==True:
+                                    await websocket.send("TheyGo")
+                                    break
+                                else:
+                                    await websocket.send("TheyNoGo")
+                                    await asyncio.sleep(1)
+                                    gehen=-1
+                                    gehenAnswerC=0
+                                    gehenAnswer=False
+                            else:
+                                break
+                        
+                        #test for "gehen"
+                        if gehen!=-1 and gehen!=pos and gehen!=parterPlayer:
+                            await websocket.send("wanaGo")
+                            a=await websocket.recv()
+                            gehenAnswerC+=1
+                            if a=="False": gehenAnswer=False
+                            while gehenAnswerC<2:
+                                await websocket.send(f"waitingGehenAnswer_{gehenAnswerC}")
+                                await asyncio.sleep(0.5)
+                            
+                            if gehenAnswer:
+                                await websocket.send("weGo")
+                                break
+                            else:
+                                await websocket.send("weNoGo")
+                                await asyncio.sleep(2)
+                            gehenAnswerC=0
+                        elif gehen!=-1:
+                            while gehenAnswerC<2:
+                                await websocket.send(f"waitingGehenAnswer_{gehenAnswerC}")
+                                await asyncio.sleep(0.5)
+                            if gehenAnswer==True:
+                                await websocket.send("TheyGo")
+                                break
+                            else:
+                                await websocket.send("TheyNoGo")
+                                await asyncio.sleep(2)
+                    if gehenAnswer==True:
+                        break
                     Card.players[pos].remove(data)
                     Card.Deck.remove(data)
 
@@ -280,7 +340,57 @@ async def server(websocket, path):
                 else:
                     while waiting != -1:
                         await websocket.send(f"WaiOnP{waiting}")
-                        await asyncio.sleep(0.25)
+                        try:
+                            data = await asyncio.wait_for(websocket.recv(),0.25)
+                        except asyncio.TimeoutError:
+                            pass
+                        else:
+                            if data=="AskIfwanaGo":
+                                gehenAnswer=True
+                                gehen=pos
+                                while gehenAnswerC<2:
+                                    await websocket.send(f"waitingGehenAnswer_{gehenAnswerC}")
+                                    await asyncio.sleep(0.5)
+                                if gehenAnswer==True:
+                                    await websocket.send("TheyGo")
+                                    break
+                                else:
+                                    await websocket.send("TheyNoGo")
+                                    await asyncio.sleep(1)
+                                    gehen=-1
+                                    gehenAnswerC=0
+                                    gehenAnswer=False
+
+                        #test for "gehen"
+                        if gehen!=-1 and gehen!=pos and gehen!=parterPlayer:
+                            await websocket.send("wanaGo")
+                            a=await websocket.recv()
+                            gehenAnswerC+=1
+                            if a=="False": gehenAnswer=False
+                            while gehenAnswerC<2:
+                                await websocket.send(f"waitingGehenAnswer_{gehenAnswerC}")
+                                await asyncio.sleep(0.5)
+                            
+                            if gehenAnswer:
+                                await websocket.send("weGo")
+                                break
+                            else:
+                                await websocket.send("weNoGo")
+                                await asyncio.sleep(2)
+                            gehenAnswerC=0
+                        elif gehen!=-1:
+                            while gehenAnswerC<2:
+                                await websocket.send(f"waitingGehenAnswer_{gehenAnswerC}")
+                                await asyncio.sleep(0.5)
+                            if gehenAnswer==True:
+                                await websocket.send("TheyGo")
+                                break
+                            else:
+                                await websocket.send("TheyNoGo")
+                                await asyncio.sleep(2)
+                    if gehenAnswer==True:
+                        break
+
                     await websocket.send(f"Stapel{'#'.join(stapel)}")
 
                     if len(stapel) >= 4:
@@ -300,6 +410,15 @@ async def server(websocket, path):
                         await websocket.send(f"Stiche{'#'.join(i)}")
                         await websocket.send(f"Stapel{'#'.join(stapel)}")
                 await asyncio.sleep(0.1)
+            
+            if gehenAnswer==True:
+                print("exited Because Gehen")
+                await asyncio.sleep(2)
+                gehen=-1
+                gehenAnswerC=0
+                gehenAnswer=False
+                stapel={}
+
             if activePlayer == pos:
                 Playing = None
                 await websocket.send("NewGame")
@@ -321,6 +440,7 @@ async def server(websocket, path):
                 if Playing == False:
                     await websocket.send("off")
             await websocket.send("reset")
+            i = []
             for x in Stiche:
                 i += [str(x)]
             await websocket.send(f"Stiche{'#'.join(i)}")
@@ -343,7 +463,7 @@ start_server = websockets.serve(server, '', 8000)
 
 
 def FileServer():
-    subprocess.run("python -m http.server 80", capture_output=True)
+    subprocess.run("python3 -m http.server 80", capture_output=True)
 
 
 threading.Thread(target=FileServer, daemon=True).start()

@@ -25,7 +25,7 @@ function neueIp() {
 }
 
 if (getCookie("serverIpAdress") == null) {
-  document.cookie = "serverIpAdress=" + prompt("Ip adress:") + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+  document.cookie = "serverIpAdress=" + location.host + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
 }
 
 var type = "none";
@@ -33,6 +33,7 @@ var ws;
 var HauptFar;
 var HauptSla;
 var posYou = "None";
+var gehen = false;
 
 var wsOpen = false
 
@@ -44,14 +45,19 @@ function wsSend(message) {
 
 function load() {
 
-  document.getElementById("ConnectionInfo").style.color = "rgba(255, 0, 0, 1)"
+  document.getElementById("ConnectionInfo").style.color = "rgb(255, 0, 0)"
   ws = new WebSocket("ws://" + getCookie("serverIpAdress") + ":8000/");
 
 
   var cards = [];
   ws.onclose = function (event) {
     wsOpen = false;
-    document.getElementById("ConnectionInfo").innerText = "Verbindung geschlossen! Neu versuch initialisirt";
+    document.getElementById("ConnectionInfo").style.display="";
+    document.getElementById("ConnectionInfo").innerText = "Verbindung geschlossen! Neu Versuch initialisiert";
+    if (document.getElementById("HauptSchlagImg") != null) {
+      document.getElementById("HauptSchlagImg").remove();
+    }
+    document.getElementById("Msg").style.display = "none"
     load();
   }
 
@@ -61,7 +67,8 @@ function load() {
     document.getElementById("startingConnection").style.display = "none";
     document.getElementById("NeueIP").style.display = "none";
     wsOpen = true;
-    document.getElementById("ConnectionInfo").style.color = "rgba(255, 0, 0, 0)"
+    document.getElementById("ConnectionInfo").style.color = "rgb(255, 0, 0)"
+    document.getElementById("ConnectionInfo").style.display="none";
   }
 
   ws.onerror = function (event) {
@@ -195,11 +202,66 @@ function load() {
     if (event.data == "reset") {
       document.title = "Watten Online | Neues Spiel";
       console.warn("RESET")
+
+      gehen = false;
+      document.getElementById("yourCards").style.filter = "";
+      document.getElementById("layedCards").style.filter = "";
+      document.getElementById("Hauptschlagt").style.filter = "";
+      document.getElementById("Msg").style.filter = "";
+      document.getElementById("go_noGo").style.display = "none";
+      document.getElementById("go_noGo_selection").style.display = "none";
+
       type = "none";
       document.querySelector("#HauptSchlagImg").remove()
+      document.getElementById("Msg").style.display = "none"
+      document.getElementById("layedCards").innerHTML = ""
       HauptFar = undefined;
       HauptSla = undefined;
       type = "none"
+    }
+
+    //gehen
+    if (event.data.substring(0, 19) == "waitingGehenAnswer_") {
+      if (gehen == false) {
+        document.getElementById("yourCards").style.filter = "grayscale(1)";
+        document.getElementById("layedCards").style.filter = "grayscale(1)";
+        document.getElementById("Hauptschlagt").style.filter = "grayscale(1)";
+        document.getElementById("Msg").style.filter = "grayscale(1)";
+        document.getElementById("go_noGo").style.display = "";
+      }
+
+      gehen = true;
+      document.getElementById("go_noGo_text").innerText = "Abstimmung findet stadt.\n Zurzeit haben " + event.data.substring(19, 999) + " Spieler abgestimmt.";
+    }
+    if (event.data == "wanaGo") {
+      document.getElementById("go_noGo_selection").style.display="";
+      document.getElementById("yourCards").style.filter = "grayscale(1)";
+      document.getElementById("layedCards").style.filter = "grayscale(1)";
+      document.getElementById("Hauptschlagt").style.filter = "grayscale(1)";
+      document.getElementById("Msg").style.filter = "grayscale(1)";
+      gehen = true;
+      document.getElementById("go_noGo").style.display = "";
+    }
+    if (event.data == "TheyGo") {
+      addMessage("Die Gegner sind gegangen");
+    }
+    if (event.data == "weGo") {
+      addMessage("Ihr seid gegangen");
+    }
+    if (event.data == "weNoGo") {
+      addMessage("Ihr seid nicht gegangen");
+    }
+    if (event.data == "TheyNoGo") {
+      addMessage("Die Gegner sind nicht gegangen");
+    }
+    if (event.data == "TheyNoGo" || event.data == "weNoGo" || event.data == "weGo" || event.data == "TheyGo") {
+      console.log("ex")
+      gehen = false;
+      document.getElementById("yourCards").style.filter = "";
+      document.getElementById("layedCards").style.filter = "";
+      document.getElementById("Hauptschlagt").style.filter = "";
+      document.getElementById("Msg").style.filter = "";
+      document.getElementById("go_noGo").style.display = "none";
     }
 
   };
@@ -215,7 +277,7 @@ function init(pos) {
   document.getElementById("Stiche" + pos).style.backgroundColor = "crimson";
   wsSend(pos);
   document.getElementById("position").style.display = "none";
-  document.getElementById("waiting").style.display = "block";
+  document.getElementById("game").style.display = "block";
 }
 //send update until selected
 startUpdateLoop = setInterval(function () {
@@ -226,21 +288,35 @@ startUpdateLoop = setInterval(function () {
 
 
 function cardSelect(cardId) {
-  document.title = "Watten Online"
-  document.getElementById("info").style.background = "unset"
-  console.log(cardId);
-  if (type == "selSla") {
-    wsSend(cardId)
-    type = ""
+  if (!gehen) {
+    document.title = "Watten Online"
+    document.getElementById("info").style.background = "unset"
+    console.log(cardId);
+    if (type == "selSla") {
+      wsSend(cardId)
+      type = ""
+    }
+    if (type == "selFar") {
+      wsSend(cardId)
+      type = ""
+    }
+    if (type == "YourSel") {
+      document.getElementById(cardId).remove();
+      document.getElementById("Msg").style.display = "none";
+      wsSend(cardId)
+      type = ""
+    }
   }
-  if (type == "selFar") {
-    wsSend(cardId)
-    type = ""
-  }
-  if (type == "YourSel") {
-    document.getElementById(cardId).remove();
-    document.getElementById("Msg").style.display = "none";
-    wsSend(cardId)
-    type = ""
-  }
+}
+
+function weGo() {
+  document.getElementById("go_noGo_selection").style.display="none";
+  wsSend("True");
+}
+function weNoGo() {
+  document.getElementById("go_noGo_selection").style.display="none";
+  wsSend("False");
+}
+function youGo() {
+  wsSend("AskIfwanaGo");
 }

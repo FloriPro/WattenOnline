@@ -6,7 +6,7 @@
 
     <link rel="stylesheet" href="/main.css">
     <script src="main.js"></script>
-    <script src="connection.js"></script>
+    <script src="connection.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <meta charset="UTF-8">
 
@@ -21,13 +21,13 @@
     </div>
 
     <div style="position: fixed;bottom: 0;right: 0;">
-        <p style="font-size: 50px;color: rgba(255, 0, 0, 0);" id="ConnectionInfo">Verbinde...</p>
+        <p style="font-size: 50px;color: rgba(255, 0, 0);background: black;" id="ConnectionInfo">Verbinde...</p>
     </div>
 
     <div id="alerts" style="right: 0;position: fixed;max-width: 350px;min-width: 250px;"></div>
 
     <h1 id="startingConnection" style="display:block">Verbindung wird aufgebaut</h1>
-    <table id="position" style="display:none">
+    <table id="position" style="display:block">
         <tr style="vertical-align: top;">
             <td align="left">
                 <button style="display: none;" id="OL" class="posSel" onclick="init('OL')">Oben Links</button>
@@ -45,8 +45,18 @@
             </td>
         </tr>
     </table>
-    <div id="game" style="display: block;">
+    <div id="game" style="display: none;">
         <h2 id="info" style="display: none;font-size: 500%;">ERROR</h2>
+
+        <!--gehen?-->
+        <div id="go_noGo" style="display:none;">
+            <h1 style="font-size: 3em;" id="go_noGo_text">Gehen-Auswahl wird Initiiert... Bitte Warten</h1>
+            <div id="go_noGo_selection" style="display: none;">
+                <button style="font-size: 300%;" onclick="weGo()">Wir Gehen</button>
+                <button style="font-size: 300%;" onclick="weNoGo()">Wir Gehen Nicht</button>
+            </div>
+        </div>
+
         <!--gelegte Carten-->
         <div style="display: block;" id="layedCards">
         </div>
@@ -68,7 +78,7 @@
         <br>
         <table>
             <td>
-                <table style="font-size: 300%;width: 100%;display: none;" id="SticheAnzahl">
+                <table style="font-size: 300%;width: 100%;display: block;" id="SticheAnzahl">
                     <tr>
                         <td>
                             <p id="SticheOL">0 Stich(e)</p>
@@ -88,21 +98,19 @@
                 </table>
             </td>
             <td>
-                <table>
-                    <td>
-                        <tr>
-                            <button style="font-size: 300%;">Wir Gehen</button>
-                        </tr>
-                        <tr>
-                            <button style="font-size: 300%;">Gehts ihr?</button>
-                        </tr>
-                    </td>
-                    <td>
-                        <p style="font-size: 250%;">Punkte für diese Runde: Unknown</p>
-                    </td>
-                </table>
+        </table>
+
+        <table>
+            <td>
+                <tr>
+                    <button style="font-size: 300%;" onclick="youGo()">Gehts ihr?</button>
+                </tr>
+            </td>
+            <td>
+                <p style="font-size: 250%;">Punkte für diese Runde: Unknown</p>
             </td>
         </table>
+        </td>
     </div>
     <button id="NeueIP" onclick="neueIp()">Neue IP</button>
 </body>
